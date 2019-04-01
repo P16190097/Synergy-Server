@@ -19,6 +19,13 @@ server.applyMiddleware({ app });
 // app.use('/graphiql', graphiqlExpress({ endpointURL: graphqlEndpoint }))
 
 //app.listen(8080);
-models.sequelize.sync({}).then(x => {
+
+
+//to drop tables and reload
+// models.sequelize.sync({force: true}).then(x => {
+//     app.listen({ port }, () => console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`))
+// });
+
+models.sequelize.sync().then(x => {
     app.listen({ port }, () => console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`))
 });

@@ -1,17 +1,27 @@
 export default (sequalize, DataTypes) => {
     const Message = sequalize.define('message', {
         text: DataTypes.STRING
-    });
+    },
+    { 
+        underscored: true 
+    }
+    );
     
     Message.associate = (models) => {
         // 1:M
         Message.belongsTo(models.Channel, {
-            foreignKey: 'channelId'
+            foreignKey: {
+                name: 'channelId', 
+                field: 'channel_id'
+            }
         });
 
         // 1:M
         Message.belongsTo(models.User, {
-            foreignKey: 'owner'
+            foreignKey: {
+                name: 'userId', 
+                field: 'user_id'
+            },
         });
     };
 
