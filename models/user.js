@@ -11,11 +11,7 @@ export default (sequalize, DataTypes) => {
         password: {
             type: DataTypes.STRING,
         },
-    },
-    { 
-        underscored: true 
-    }
-    );
+    });
 
     User.associate = (models) => {
         User.belongsToMany(models.Team, {

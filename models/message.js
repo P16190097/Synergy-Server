@@ -1,11 +1,7 @@
 export default (sequalize, DataTypes) => {
     const Message = sequalize.define('message', {
         text: DataTypes.STRING
-    },
-    { 
-        underscored: true 
-    }
-    );
+    });
     
     Message.associate = (models) => {
         // 1:M
