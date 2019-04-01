@@ -2,12 +2,25 @@ export default (sequalize, DataTypes) => {
     const Channel = sequalize.define('channel', {
         name: DataTypes.STRING,
         public: DataTypes.BOOLEAN
-    });
+    },
+    { 
+        underscored: true 
+    }
+    );
     
     Channel.associate = (models) => {
         // 1:M
         Channel.belongsTo(models.Team, {
-            foreignKey: 'teamId'
+            foreignKey: 'teamId',
+            field: 'team_id'
+        });
+
+        Channel.belongsToMany(models.User, {
+            through: 'channel_member',
+            foreignKey: {
+                name: 'channelId',
+                field: 'channel_id'
+            }
         });
     };
 
