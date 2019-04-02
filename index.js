@@ -1,24 +1,29 @@
 import express from 'express';
-import typeDefs from './schema';
-import resolvers from './resolvers';
-import { ApolloServer, gql } from 'apollo-server-express';
 import models from './models';
+import path from 'path';
+import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
+import { ApolloServer, gql } from 'apollo-server-express';
+import { makeExecutableSchema } from 'graphql-tools';
+
+const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')));
+const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
 
 // export const schema = makeExecutableSchema({
 //     typeDefs,
 //     resolvers
 // });
 
+// const graphqlEndpoint = '/graphql';
+
 const app = express();
 const port = 8080;
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ typeDefs, resolvers, context: { models } });
 server.applyMiddleware({ app });
 
-// app.use('/graphql', bodyparser.json(), graphqlExpress({ schema }));
+// app.use('/graphql', bodyParser.json(), graphqlExpress({ schema, context: models }));
 // app.use('/graphiql', graphiqlExpress({ endpointURL: graphqlEndpoint }))
-
-//app.listen(8080);
+// app.listen(8080);
 
 
 //to drop tables and reload
