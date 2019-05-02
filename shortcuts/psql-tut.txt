@@ -1,0 +1,4 @@
+psql -U postgres
+\c "db name here"
+\dt //lists db tables
+SELECT "column or *" FROM "table here"; //how to query
