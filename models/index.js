@@ -2,7 +2,10 @@
 import Sequelize from'sequelize';
 
 var sequelize = new Sequelize('synergy', 'postgres', 'postgres', {
-  dialect: 'postgres'
+  dialect: 'postgres',
+  define: {
+    underscored: true
+  },
 });
 
 const models = {

@@ -7,7 +7,16 @@ export default (sequalize, DataTypes) => {
     Channel.associate = (models) => {
         // 1:M
         Channel.belongsTo(models.Team, {
-            foreignKey: 'teamId'
+            foreignKey: 'teamId',
+            field: 'team_id'
+        });
+
+        Channel.belongsToMany(models.User, {
+            through: 'channel_member',
+            foreignKey: {
+                name: 'channelId',
+                field: 'channel_id'
+            }
         });
     };
 
