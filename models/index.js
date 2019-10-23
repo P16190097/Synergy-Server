@@ -1,5 +1,5 @@
 
-import Sequelize from'sequelize';
+import Sequelize from 'sequelize';
 
 var sequelize = new Sequelize('synergy', 'postgres', 'postgres', {
   dialect: 'postgres',
@@ -9,10 +9,10 @@ var sequelize = new Sequelize('synergy', 'postgres', 'postgres', {
 });
 
 const models = {
-    User: sequelize['import']('./user'),
-    Channel: sequelize['import']('./channel'),
-    Message: sequelize['import']('./message'),
-    Team: sequelize['import']('./team')
+  User: sequelize['import']('./user'),
+  Channel: sequelize['import']('./channel'),
+  Message: sequelize['import']('./message'),
+  Team: sequelize['import']('./team')
 };
 
 

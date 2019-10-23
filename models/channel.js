@@ -3,7 +3,7 @@ export default (sequalize, DataTypes) => {
         name: DataTypes.STRING,
         public: DataTypes.BOOLEAN
     });
-    
+
     Channel.associate = (models) => {
         // 1:M
         Channel.belongsTo(models.Team, {

@@ -5,12 +5,12 @@ export default (sequalize, DataTypes) => {
             unique: true,
         },
     });
-    
+
     Team.associate = (models) => {
         Team.belongsToMany(models.User, {
             through: 'member',
             foreignKey: {
-                name: 'teamId', 
+                name: 'teamId',
                 field: 'team_id'
             }
         });
