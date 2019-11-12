@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/P16190097/Synergy.git"
+    "url": "git+https://github.com/P16190097/Synergy-Server.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/P16190097/Synergy/issues"
+    "url": "https://github.com/P16190097/Synergy-Server/issues"
   },
-  "homepage": "https://github.com/P16190097/Synergy#readme",
+  "homepage": "https://github.com/P16190097/Synergy-Server#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",

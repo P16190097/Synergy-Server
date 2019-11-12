@@ -20,7 +20,7 @@ export default (sequalize, DataTypes) => {
                 name: 'userId',
                 field: 'user_id'
             }
-        })
+        });
         // N:M
         User.belongsToMany(models.Channel, {
             through: 'channel_member',

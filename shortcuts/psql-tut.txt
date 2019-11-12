@@ -1,4 +1,6 @@
 psql -U postgres
+password = password
+database port = 5432
 \c "db name here"
 \dt //lists db tables
 SELECT "column or *" FROM "table here"; //how to query
