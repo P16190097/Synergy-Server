@@ -1,7 +1,8 @@
 
 import Sequelize from 'sequelize';
 
-var sequelize = new Sequelize('synergy', 'postgres', 'postgres', {
+// database connection configuration
+var sequelize = new Sequelize('synergy', 'postgres', 'password', {
   dialect: 'postgres',
   define: {
     underscored: true
