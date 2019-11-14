@@ -3,6 +3,7 @@ import models from './models';
 import path from 'path';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import { ApolloServer } from 'apollo-server-express';
+import cors from 'cors';
 
 /* global __dirname */
 // __dirname conains the absolute path of the directory containing the currently executing file
@@ -14,6 +15,7 @@ const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers'))
 const app = express();
 const port = 8080;
 
+app.use(cors('*'));
 const server = new ApolloServer({ typeDefs, resolvers, context: { models, user: { id: 1 } } });
 server.applyMiddleware({ app });
 
