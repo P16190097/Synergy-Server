@@ -1,4 +1,5 @@
 psql -U postgres
+username= postgres
 password = password
 database port = 5432
 \c "db name here"
