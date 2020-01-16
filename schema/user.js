@@ -21,3 +21,5 @@ export default `
         errors: [Error!]
     }
 `;
+
+//NO LONGER USING RegisterResponse TYPE
