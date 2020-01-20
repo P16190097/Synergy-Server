@@ -10,13 +10,17 @@ import cors from 'cors';
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')));
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
 
+// JWT Secret token and refresh token keys
+const SECRET = 'aksdgaygfjscnaoihwq';
+const SECRET2 = 'ashfdskdbgalkdfjgoahwd';
+
 // const graphqlEndpoint = '/graphql';
 
 const app = express();
 const port = 8080;
 
 app.use(cors('*'));
-const server = new ApolloServer({ typeDefs, resolvers, context: { models, user: { id: 1 } } });
+const server = new ApolloServer({ typeDefs, resolvers, context: { models, user: { id: 1 }, SECRET, SECRET2 } });
 server.applyMiddleware({ app });
 
 

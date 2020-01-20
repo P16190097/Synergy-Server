@@ -12,7 +12,15 @@ export default `
     }
 
     type Mutation {
-        registerUser(username: String!, email: String!, password: String!): User!
+        registerUser(username: String!, email: String!, password: String!): RegisterResponse!
+        authenticateUser(email: String!, password: String!): LoginResponse!
+    }
+
+    type LoginResponse {
+        ok: Boolean!
+        token: String
+        refreshToken: String
+        errors: [Error!]
     }
     
     type RegisterResponse {
@@ -21,5 +29,3 @@ export default `
         errors: [Error!]
     }
 `;
-
-//NO LONGER USING RegisterResponse TYPE
