@@ -30,7 +30,7 @@ export const tryLogin = async (email, password, models, SECRET, SECRET2) => {
     const user = await models.User.findOne({ where: { email }, raw: true });
     if (!user) {
         return {
-            ok: false,
+            success: false,
             errors: [{ path: 'login', message: 'Invalid login' }],
         };
     }
@@ -38,7 +38,7 @@ export const tryLogin = async (email, password, models, SECRET, SECRET2) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
         return {
-            ok: false,
+            success: false,
             errors: [{ path: 'login', message: 'Invalid login' }]
         };
     }
@@ -48,7 +48,7 @@ export const tryLogin = async (email, password, models, SECRET, SECRET2) => {
     const [token, refreshToken] = await createTokens(user, SECRET, refreshTokenSecret);
 
     return {
-        ok: true,
+        success: true,
         token,
         refreshToken,
     };

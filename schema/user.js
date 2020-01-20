@@ -17,14 +17,14 @@ export default `
     }
 
     type LoginResponse {
-        ok: Boolean!
+        success: Boolean!
         token: String
         refreshToken: String
         errors: [Error!]
     }
     
     type RegisterResponse {
-        ok: Boolean!
+        success: Boolean!
         user: User
         errors: [Error!]
     }
