@@ -10,7 +10,8 @@ export default {
     Mutation: {
         authenticateUser: (parent, { email, password }, { models, SECRET, SECRET2 }) => {
             try {
-                tryLogin(email, password, models, SECRET, SECRET2);
+                const response = tryLogin(email, password, models, SECRET, SECRET2);
+                return response;
             }
             catch (error) {
                 return {

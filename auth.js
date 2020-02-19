@@ -52,6 +52,7 @@ export const refreshTokens = async (token, refreshToken, models, SECRET, SECRET2
         jwt.verify(refreshToken, refreshSecret);
     }
     catch (error) {
+        console.log('verification error');
         return {};
     }
 
@@ -68,7 +69,7 @@ export const tryLogin = async (email, password, models, SECRET, SECRET2) => {
     if (!user) {
         return {
             success: false,
-            errors: [{ path: 'login', message: 'Invalid login' }],
+            errors: [{ path: 'authenticateUser', message: 'Invalid login' }]
         };
     }
 
@@ -76,7 +77,7 @@ export const tryLogin = async (email, password, models, SECRET, SECRET2) => {
     if (!valid) {
         return {
             success: false,
-            errors: [{ path: 'login', message: 'Invalid login' }]
+            errors: [{ path: 'authenticateUser', message: 'Invalid login' }]
         };
     }
 
