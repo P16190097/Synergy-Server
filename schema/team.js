@@ -6,6 +6,11 @@ export default `
     }
 
     type Mutation {
-        createTeam(name: String!): Boolean!
+        createTeam(name: String!): CreateTeamResponse!
+    }
+
+    type CreateTeamResponse {
+        success: Boolean!
+        errors: [Error!]
     }
 `;
