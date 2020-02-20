@@ -36,7 +36,6 @@ const addUser = async (req, res, next) => {
                 res.set('x-token', newTokens.token);
                 res.set('x-refresh-token', newTokens.refreshToken);
             }
-            console.log(newTokens.user);
             // eslint-disable-next-line require-atomic-updates
             req.user = newTokens.user;
         }
@@ -50,15 +49,12 @@ app.use(cors('*'));
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req }) => {
-        //console.log(req);
-        return {
-            models,
-            user: req.user,
-            SECRET,
-            SECRET2
-        }
-    }
+    context: ({ req }) => ({
+        models,
+        user: req.user,
+        SECRET,
+        SECRET2
+    })
 });
 
 server.applyMiddleware({ app });
