@@ -17,6 +17,7 @@ export default `
 
     type CreateTeamResponse {
         success: Boolean!
+        team: Team!
         errors: [Error!]
     }
 `;
