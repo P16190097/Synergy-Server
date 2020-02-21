@@ -4,6 +4,7 @@ import Sequelize from 'sequelize';
 // database connection configuration
 var sequelize = new Sequelize('synergy', 'postgres', 'password', {
   dialect: 'postgres',
+  operatorAliases: Sequelize.Op,
   define: {
     underscored: true
   },
