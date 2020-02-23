@@ -8,10 +8,10 @@ export default `
     }
 
     type Mutation {
-        createChannel(teamId: Int!, name: String!, public: Boolean=false): CreateChannelResponse! 
+        createChannel(teamId: Int!, name: String!, public: Boolean=false): ChannelResponse! 
     }
 
-    type CreateChannelResponse {
+    type ChannelResponse {
         success: Boolean!
         channel: Channel!
         errors: [Error!]
