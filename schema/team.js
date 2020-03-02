@@ -2,13 +2,14 @@ export default `
     type Team {
         id: Int!
         name: String!
-        owner: User!
+        owner: Int!
         members: [User!]!
         channels: [Channel!]!
     }
 
     type Query {
         allTeams: [Team!]!
+        inviteTeams: [Team!]!
     }
 
     type Mutation {
@@ -18,7 +19,7 @@ export default `
 
     type CreateTeamResponse {
         success: Boolean!
-        team: Team!
+        team: Team
         errors: [Error!]
     }
 

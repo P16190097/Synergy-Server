@@ -13,7 +13,7 @@ export default `
 
     type ChannelResponse {
         success: Boolean!
-        channel: Channel!
+        channel: Channel
         errors: [Error!]
     }
 `;

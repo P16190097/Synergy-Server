@@ -5,16 +5,40 @@ export default {
     Query: {
         allTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
             models.Team.findAll({ where: { owner: user.id } }, { raw: true })
-        )
+        ),
+        // 'include' defines the join between teams and user table
+        inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
+            models.Team.findAll({
+                include: [
+                    {
+                        model: models.User,
+                        where: { id: user.id }
+                    }
+                ]
+            }, { raw: true })
+        ),
+        // This runs custom sql commands where sequalize does not have the capability to do so
+        // inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
+        //     models.sequelize.query('SELECT * FROM teams INNER JOIN members ON id = team_id WHERE user_id = ?', {
+        //         replacements: [user.id],
+        //         models: models.Team
+        //     }),
+        // ),
     },
     Mutation: {
         createTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
             try {
-                const team = await models.Team.create({ ...args, owner: user.id });
-                await models.Channel.create({ name: 'general', public: true, teamId: team.id });
+                // tries to create team and initial channel then if either fails it dosent create either the channel or the team
+                const response = await models.sequelize.transaction(
+                    async () => {
+                        const team = await models.Team.create({ ...args, owner: user.id });
+                        await models.Channel.create({ name: 'general', public: true, teamId: team.id });
+                        return team;
+                    }
+                );
                 return {
                     success: true,
-                    team: team,
+                    team: response,
                 };
             }
             catch (error) {
