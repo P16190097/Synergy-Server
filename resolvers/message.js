@@ -3,9 +3,7 @@ import { requiresAuth } from '../permissions';
 
 export default {
     Query: {
-        getMessages: requiresAuth.createResolver(async (parent, args, { models }) =>
-            models.Message.findAll({ where: { channelId: args.channelId } }, { raw: true })
-        ),
+        getMessages: requiresAuth.createResolver(async (parent, args, { models }) => models.Message.findAll({ where: { channelId: args.channelId } }, { raw: true })),
     },
     Mutation: {
         createMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
@@ -25,6 +23,6 @@ export default {
         })
     },
     Message: {
-        user: ({ userId }, args, { models }) => models.User.findOne({ where: { id: userId } }),
+        user: ({ userId }, args, { models }) => models.User.findOne({ where: { id: userId } }, { raw: true }),
     },
 };
