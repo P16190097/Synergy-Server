@@ -22,9 +22,4 @@ export default `
         team: Team
         errors: [Error!]
     }
-
-    type VoidResponse {
-        success: Boolean!
-        errors: [Error!]
-    }
 `;
