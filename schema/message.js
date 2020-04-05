@@ -20,4 +20,8 @@ export default `
     type Mutation {
         createMessage(channelId: Int!, text: String!): VoidResponse!
     }
+
+    type Subscription {
+        newChannelMessage(channelId: Int!): Message!
+    }
 `;
