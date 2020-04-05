@@ -50,9 +50,9 @@ app.use(cors('*'));
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req }) => ({
+    context: ({ req, connection }) => ({
         models,
-        user: req.user,
+        user: connection ? connection.user : req.user,
         SECRET,
         SECRET2
     })

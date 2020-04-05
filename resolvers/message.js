@@ -15,7 +15,10 @@ export default {
             try {
                 const message = await models.Message.create({ ...args, userId: user.id });
 
-                pubSub.publish(NEW_CHANNEL_MESSAGE, { channelId: args.channelId, newChannelMessage: message.dataValues });
+                pubSub.publish(NEW_CHANNEL_MESSAGE, {
+                    channelId: args.channelId,
+                    newChannelMessage: message.dataValues,
+                });
 
                 return {
                     success: true,
@@ -41,6 +44,11 @@ export default {
         },
     },
     Message: {
-        user: ({ userId }, args, { models }) => models.User.findOne({ where: { id: userId } }, { raw: true }),
+        user: ({ user, userId }, args, { models }) => {
+            if (user) {
+                return user;
+            }
+            return models.User.findOne({ where: { id: userId } }, { raw: true });
+        },
     },
 };
