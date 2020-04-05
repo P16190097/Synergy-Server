@@ -3,7 +3,7 @@ import { requiresAuth } from '../permissions';
 
 export default {
     Query: {
-        getMessages: requiresAuth.createResolver(async (parent, args, { models }) => models.Message.findAll({ where: { channelId: args.channelId } }, { raw: true })),
+        getMessages: requiresAuth.createResolver(async (parent, args, { models }) => models.Message.findAll({ where: { channelId: args.channelId }, order: [['createdAt', 'ASC']] }, { raw: true })),
     },
     Mutation: {
         createMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
