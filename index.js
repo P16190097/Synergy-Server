@@ -3,6 +3,7 @@ import models from './models';
 import path from 'path';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import { ApolloServer } from 'apollo-server-express';
+import http from 'http';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import { refreshTokens } from './auth';
@@ -59,11 +60,17 @@ const server = new ApolloServer({
 
 server.applyMiddleware({ app });
 
+const httpServer = http.createServer(app);
+server.installSubscriptionHandlers(httpServer);
+
 //to drop tables and reload
 // models.sequelize.sync({ force: true }).then(() => {
 //     app.listen({ port }, () => console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`));
 // });
 
 models.sequelize.sync().then(() => {
-    app.listen({ port }, () => console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`));
+    httpServer.listen({ port }, () => {
+        console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`);
+        console.log(`🚀 Subscriptions ready at ws://localhost:${port}${server.subscriptionsPath}`);
+    });
 });
