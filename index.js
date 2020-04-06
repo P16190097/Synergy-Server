@@ -93,7 +93,10 @@ server.installSubscriptionHandlers(httpServer);
 
 //to drop tables and reload
 // models.sequelize.sync({ force: true }).then(() => {
-//     app.listen({ port }, () => console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`));
+//     httpServer.listen({ port }, () => {
+//         console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`);
+//         console.log(`🚀 Subscriptions ready at ws://localhost:${port}${server.subscriptionsPath}`);
+//     });
 // });
 
 models.sequelize.sync().then(() => {
