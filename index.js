@@ -61,7 +61,6 @@ const server = new ApolloServer({
                 }
                 catch (err) {
                     const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
-                    // eslint-disable-next-line require-atomic-updates
                     user = newTokens.user;
                 }
                 if (!user) {
