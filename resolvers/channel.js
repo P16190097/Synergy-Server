@@ -1,14 +1,30 @@
+import { formatErrors } from '../globals';
+import { requiresAuth } from '../permissions';
+
 export default {
     Mutation: {
-        createChannel: async (parent, args, { models }) => {
+        createChannel: requiresAuth.createResolver(async (parent, args, { models, user }) => {
             try {
-                await models.Channel.create(args);
-                return true;
+                const team = await models.Team.findOne({ where: { id: args.teamId } }, { raw: true });
+                if (team.owner !== user.id) {
+                    return {
+                        success: false,
+                        errors: [{ path: 'channel', message: 'You do not have permission to create channels here' }]
+                    };
+                }
+                const channel = await models.Channel.create(args);
+                return {
+                    success: true,
+                    channel: channel,
+                };
             }
             catch (error) {
                 console.log(error);
-                return false;
+                return {
+                    success: false,
+                    errors: formatErrors(error, models),
+                };
             }
-        }
+        })
     }
 };

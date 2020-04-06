@@ -4,6 +4,7 @@ import Sequelize from 'sequelize';
 // database connection configuration
 var sequelize = new Sequelize('synergy', 'postgres', 'password', {
   dialect: 'postgres',
+  operatorAliases: Sequelize.Op,
   define: {
     underscored: true
   },
@@ -13,7 +14,8 @@ const models = {
   User: sequelize['import']('./user'),
   Channel: sequelize['import']('./channel'),
   Message: sequelize['import']('./message'),
-  Team: sequelize['import']('./team')
+  Team: sequelize['import']('./team'),
+  Member: sequelize['import']('./member'),
 };
 
 
