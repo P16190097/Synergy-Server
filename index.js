@@ -50,6 +50,35 @@ app.use(cors('*'));
 const server = new ApolloServer({
     typeDefs,
     resolvers,
+    subscriptions: {
+        onConnect: async (connectionParams /*, webSocket*/) => {
+            if (connectionParams.token && connectionParams.refreshToken) {
+                let user = null;
+                const { token, refreshToken } = connectionParams;
+                try {
+                    const payload = jwt.verify(token, SECRET);
+                    user = payload.user;
+                }
+                catch (err) {
+                    const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
+                    // eslint-disable-next-line require-atomic-updates
+                    user = newTokens.user;
+                }
+                if (!user) {
+                    throw new Error('Invalid auth tokens!');
+                }
+
+                const member = await models.Member.findOne({ where: { teamId: 1, userId: user.id } });
+
+                if (!member) {
+                    throw new Error('Not authorised to view this team!');
+                }
+
+                return true;
+            }
+            throw new Error('Missing auth token!');
+        },
+    },
     context: ({ req, connection }) => ({
         models,
         user: connection ? connection.user : req.user,

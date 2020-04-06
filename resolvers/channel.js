@@ -1,10 +1,9 @@
 import { formatErrors } from '../globals';
 import { requiresAuth } from '../permissions';
-import user from '../schema/user';
 
 export default {
     Mutation: {
-        createChannel: requiresAuth.createResolver(async (parent, args, { models }) => {
+        createChannel: requiresAuth.createResolver(async (parent, args, { models, user }) => {
             try {
                 const team = await models.Team.findOne({ where: { id: args.teamId } }, { raw: true });
                 if (team.owner !== user.id) {
