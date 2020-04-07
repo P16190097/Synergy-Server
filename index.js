@@ -67,11 +67,11 @@ const server = new ApolloServer({
                     throw new Error('Invalid auth tokens!');
                 }
 
-                const member = await models.Member.findOne({ where: { teamId: 1, userId: user.id } });
+                // const member = await models.Member.findOne({ where: { teamId: 1, userId: user.id } });
 
-                if (!member) {
-                    throw new Error('Not authorised to view this team!');
-                }
+                // if (!member) {
+                //     throw new Error('Not authorised to view this team!');
+                // }
 
                 return true;
             }

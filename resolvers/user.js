@@ -5,14 +5,14 @@ import { requiresAuth } from '../permissions';
 export default {
     User: {
         teams: (parent, args, { models, user }) =>
-            models.Team.findAll({
-                include: [
-                    {
-                        model: models.User,
-                        where: { id: user.id }
-                    }
-                ]
-            }, { raw: true })
+            models.sequelize.query(
+                'SELECT * FROM teams INNER JOIN members ON id = team_id WHERE user_id = ?',
+                {
+                    replacements: [user.id],
+                    model: models.Team,
+                    raw: true,
+                },
+            ),
     },
     Query: {
         getUser: requiresAuth.createResolver((parent, args, { models, user }) => models.User.findOne({ where: { id: user.id } })),
@@ -38,7 +38,7 @@ export default {
         // inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
         //     models.sequelize.query('SELECT * FROM teams INNER JOIN members ON id = team_id WHERE user_id = ?', {
         //         replacements: [user.id],
-        //         models: models.Team
+        //         models: models.Team,
         //     }),
         // ),
     },
