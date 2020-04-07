@@ -36,14 +36,15 @@ export default {
     Subscription: {
         newChannelMessage: {
             subscribe: withFilter(
-                async (parent, args, { models, user }) => {
-                    const channel = await models.Channel.findOne({ where: { channelId: channel.id } });
-                    const member = await models.Member.findOne({ where: { teamId: channel.teamId, userId: user.id } });
-                    if (!member) {
-                        throw new Error('You\'re not a member of this team');
-                    }
-                    pubSub.asyncIterator(NEW_CHANNEL_MESSAGE);
-                },
+                (parent, args, { models, user }) =>
+                    // function here needs to be asynchronous
+                    // const channel = await models.Channel.findOne({ where: { channelId: channel.id } });
+                    // const member = await models.Member.findOne({ where: { teamId: channel.teamId, userId: user.id } });
+                    // if (!member) {
+                    //     throw new Error('You\'re not a member of this team');
+                    // }
+                    pubSub.asyncIterator(NEW_CHANNEL_MESSAGE)
+                ,
                 (payload, args) => {
                     return payload.channelId === args.channelId;
                 }
