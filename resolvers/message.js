@@ -1,6 +1,6 @@
 import { withFilter, PubSub } from 'apollo-server-express';
 import { formatErrors } from '../globals';
-import { requiresAuth } from '../permissions';
+import { requiresAuth, requiresMembership } from '../permissions';
 
 const pubSub = new PubSub();
 
@@ -35,20 +35,12 @@ export default {
     },
     Subscription: {
         newChannelMessage: {
-            subscribe: withFilter(
-                (parent, args, { models, user }) =>
-                    // function here needs to be asynchronous
-                    // const channel = await models.Channel.findOne({ where: { channelId: channel.id } });
-                    // const member = await models.Member.findOne({ where: { teamId: channel.teamId, userId: user.id } });
-                    // if (!member) {
-                    //     throw new Error('You\'re not a member of this team');
-                    // }
-                    pubSub.asyncIterator(NEW_CHANNEL_MESSAGE)
-                ,
+            subscribe: requiresMembership.createResolver(withFilter(
+                () => pubSub.asyncIterator(NEW_CHANNEL_MESSAGE),
                 (payload, args) => {
                     return payload.channelId === args.channelId;
                 }
-            )
+            )),
         },
     },
     Message: {

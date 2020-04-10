@@ -74,10 +74,11 @@ const server = new ApolloServer({
     },
     context: ({ req, connection }) => ({
         models,
-        user: connection ? connection.user : req.user,
+        user: connection ? connection.context.user : req.user,
         SECRET,
         SECRET2
-    })
+    }
+    )
 });
 
 server.applyMiddleware({ app });

@@ -13,7 +13,7 @@ export default (sequalize, DataTypes) => {
         });
 
         // 1:M
-        directMessage.belongsTo(models.User, {
+        directMessage.belongsTo(models.Team, {
             foreignKey: {
                 name: 'teamId',
                 field: 'team_id',
@@ -24,7 +24,7 @@ export default (sequalize, DataTypes) => {
         directMessage.belongsTo(models.User, {
             foreignKey: {
                 name: 'senderId',
-                field: 'receiverId',
+                field: 'sender_id',
             },
         });
     };
