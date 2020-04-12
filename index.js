@@ -53,37 +53,32 @@ const server = new ApolloServer({
     subscriptions: {
         onConnect: async (connectionParams /*, webSocket*/) => {
             if (connectionParams.token && connectionParams.refreshToken) {
-                let user = null;
                 const { token, refreshToken } = connectionParams;
                 try {
-                    const payload = jwt.verify(token, SECRET);
-                    user = payload.user;
+                    const { user } = jwt.verify(token, SECRET);
+                    return { user };
                 }
                 catch (err) {
                     const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
-                    user = newTokens.user;
-                }
-                if (!user) {
-                    throw new Error('Invalid auth tokens!');
+                    return { user: newTokens.user };
                 }
 
-                const member = await models.Member.findOne({ where: { teamId: 1, userId: user.id } });
+                // const member = await models.Member.findOne({ where: { teamId: 1, userId: user.id } });
 
-                if (!member) {
-                    throw new Error('Not authorised to view this team!');
-                }
-
-                return true;
+                // if (!member) {
+                //     throw new Error('Not authorised to view this team!');
+                // }
             }
-            throw new Error('Missing auth token!');
+            return { models };
         },
     },
     context: ({ req, connection }) => ({
         models,
-        user: connection ? connection.user : req.user,
+        user: connection ? connection.context.user : req.user,
         SECRET,
         SECRET2
-    })
+    }
+    )
 });
 
 server.applyMiddleware({ app });
@@ -93,7 +88,10 @@ server.installSubscriptionHandlers(httpServer);
 
 //to drop tables and reload
 // models.sequelize.sync({ force: true }).then(() => {
-//     app.listen({ port }, () => console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`));
+//     httpServer.listen({ port }, () => {
+//         console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`);
+//         console.log(`🚀 Subscriptions ready at ws://localhost:${port}${server.subscriptionsPath}`);
+//     });
 // });
 
 models.sequelize.sync().then(() => {

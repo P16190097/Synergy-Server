@@ -1,5 +1,10 @@
-export default (sequalize) => {
-    const Channel = sequalize.define('member', {});
+export default (sequalize, DataTypes) => {
+    const Member = sequalize.define('member', {
+        admin: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+        }
+    });
 
-    return Channel;
+    return Member;
 };

@@ -2,29 +2,6 @@ import { formatErrors } from '../globals';
 import { requiresAuth } from '../permissions';
 
 export default {
-    Query: {
-        allTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
-            models.Team.findAll({ where: { owner: user.id } }, { raw: true })
-        ),
-        // 'include' defines the join between teams and user table
-        inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
-            models.Team.findAll({
-                include: [
-                    {
-                        model: models.User,
-                        where: { id: user.id }
-                    }
-                ]
-            }, { raw: true })
-        ),
-        // This runs custom sql commands where sequalize does not have the capability to do so
-        // inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
-        //     models.sequelize.query('SELECT * FROM teams INNER JOIN members ON id = team_id WHERE user_id = ?', {
-        //         replacements: [user.id],
-        //         models: models.Team
-        //     }),
-        // ),
-    },
     Mutation: {
         createTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
             try {
@@ -33,6 +10,7 @@ export default {
                     async () => {
                         const team = await models.Team.create({ ...args, owner: user.id });
                         await models.Channel.create({ name: 'general', public: true, teamId: team.id });
+                        await models.Member.create({ teamId: team.id, userId: user.id, admin: true });
                         return team;
                     }
                 );
@@ -51,10 +29,10 @@ export default {
         }),
         addTeamMember: requiresAuth.createResolver(async (parent, { email, teamId }, { models, user }) => {
             try {
-                const teamPromise = models.Team.findOne({ where: { id: teamId } }, { raw: true });
+                const memberPromise = models.Member.findOne({ where: { teamId, userId: user.id } }, { raw: true });
                 const userToAddPromise = models.User.findOne({ where: { email }, raw: true });
-                const [team, userToAdd] = await Promise.all([teamPromise, userToAddPromise]);
-                if (team.owner !== user.id) {
+                const [member, userToAdd] = await Promise.all([memberPromise, userToAddPromise]);
+                if (!member.admin) {
                     return {
                         success: false,
                         errors: [{ path: 'email', message: 'You cannot add members to this team' }]
@@ -88,5 +66,16 @@ export default {
     },
     Team: {
         channels: ({ id }, args, { models }) => models.Channel.findAll({ where: { teamId: id } }),
+        directMessageMembers: ({ id }, args, { models, user }) =>
+            models.sequelize.query('SELECT DISTINCT users.id, users.username FROM users JOIN direct_messages AS dms ON (users.id = dms.sender_id) OR (users.id = dms.receiver_id) WHERE (:currentUserId = dms.receiver_id OR :currentUserId = dms.sender_id) AND dms.team_id = :teamId',
+                {
+                    replacements: {
+                        currentUserId: user.id,
+                        teamId: id,
+                    },
+                    model: models.User,
+                    raw: true,
+                }
+            ),
     },
 };

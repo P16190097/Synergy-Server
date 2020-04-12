@@ -1,11 +1,44 @@
 import { tryLogin } from '../auth';
 import { formatErrors } from '../globals';
+import { requiresAuth } from '../permissions';
 
 export default {
     Query: {
-        getUser: (parent, { id }, { models }) => models.User.findOne({ where: { id } }),
+        getUser: requiresAuth.createResolver((parent, args, { models, user }) => models.User.findOne({ where: { id: user.id } })),
 
         allUsers: (parent, args, { models }) => models.User.findAll(),
+
+        getTeamUsers: requiresAuth.createResolver((parent, args, { models }) => models.User.findAll({
+            include: [
+                {
+                    model: models.Team,
+                    where: { id: args.teamId }
+                }
+            ]
+        })),
+
+        allTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
+            models.Team.findAll({ where: { owner: user.id } }, { raw: true })
+        ),
+
+        // 'include' defines the join between teams and user table
+        inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
+            models.Team.findAll({
+                include: [
+                    {
+                        model: models.User,
+                        where: { id: user.id }
+                    }
+                ]
+            }, { raw: true })
+        ),
+        // This runs custom sql commands where sequalize does not have the capability to do so
+        // inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
+        //     models.sequelize.query('SELECT * FROM teams INNER JOIN members ON id = team_id WHERE user_id = ?', {
+        //         replacements: [user.id],
+        //         models: models.Team,
+        //     }),
+        // ),
     },
     Mutation: {
         authenticateUser: (parent, { email, password }, { models, SECRET, SECRET2 }) => {
@@ -37,5 +70,16 @@ export default {
             // store hashed password, 12 saltrounds should suffice
             // models.User.create(args);
         },
-    }
+    },
+    User: {
+        teams: (parent, args, { models, user }) =>
+            models.sequelize.query(
+                'SELECT * FROM teams INNER JOIN members ON id = team_id WHERE user_id = ?',
+                {
+                    replacements: [user.id],
+                    model: models.Team,
+                    raw: true,
+                },
+            ),
+    },
 }; 

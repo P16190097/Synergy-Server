@@ -1,8 +1,7 @@
-import { withFilter, PubSub } from 'apollo-server-express';
+import { withFilter } from 'apollo-server-express';
+import pubSub from '../pubsub';
 import { formatErrors } from '../globals';
-import { requiresAuth } from '../permissions';
-
-const pubSub = new PubSub();
+import { requiresAuth, requiresMembership } from '../permissions';
 
 const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
 
@@ -35,12 +34,12 @@ export default {
     },
     Subscription: {
         newChannelMessage: {
-            subscribe: withFilter(
+            subscribe: requiresMembership.createResolver(withFilter(
                 () => pubSub.asyncIterator(NEW_CHANNEL_MESSAGE),
                 (payload, args) => {
                     return payload.channelId === args.channelId;
                 }
-            )
+            )),
         },
     },
     Message: {

@@ -2,9 +2,9 @@ export default `
     type Team {
         id: Int!
         name: String!
-        owner: Int!
-        members: [User!]!
+        directMessageMembers: [User!]
         channels: [Channel!]!
+        admin: Boolean!
     }
 
     type Query {
