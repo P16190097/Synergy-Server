@@ -1,13 +1,12 @@
-import { withFilter, PubSub } from 'apollo-server-express';
+import { withFilter } from 'apollo-server-express';
+import pubSub from '../pubsub';
 import { formatErrors } from '../globals';
-import { requiresAuth, requiresMembership } from '../permissions';
+import { requiresAuth, directMessageAuth } from '../permissions';
 import Sequelize from 'sequelize';
 
 const Op = Sequelize.Op;
 
-const pubSub = new PubSub();
-
-const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
+const NEW_DIRECT_MESSAGE = 'NEW_DIRECT_MESSAGE';
 
 export default {
     Query: {
@@ -26,12 +25,19 @@ export default {
     Mutation: {
         createDirectMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
             try {
-                await models.DirectMessage.create({ teamId: args.teamId, receiverId: args.receiverId, senderId: user.id, text: args.text });
+                const message = await models.DirectMessage.create({ teamId: args.teamId, receiverId: args.receiverId, senderId: user.id, text: args.text });
 
-                // pubSub.publish(NEW_CHANNEL_MESSAGE, {
-                //     channelId: args.channelId,
-                //     newChannelMessage: message.dataValues,
-                // });
+                pubSub.publish(NEW_DIRECT_MESSAGE, {
+                    teamId: args.teamId,
+                    senderId: user.id,
+                    receiverId: args.receiverId,
+                    newDirectMessage: {
+                        ...message.dataValues,
+                        sender: {
+                            username: user.username
+                        }
+                    },
+                });
 
                 return {
                     success: true,
@@ -46,16 +52,16 @@ export default {
             }
         })
     },
-    // Subscription: {
-    //     newChannelMessage: {
-    //         subscribe: requiresMembership.createResolver(withFilter(
-    //             () => pubSub.asyncIterator(NEW_CHANNEL_MESSAGE),
-    //             (payload, args) => {
-    //                 return payload.channelId === args.channelId;
-    //             }
-    //         )),
-    //     },
-    // },
+    Subscription: {
+        newDirectMessage: {
+            subscribe: directMessageAuth.createResolver(withFilter(
+                () => pubSub.asyncIterator(NEW_DIRECT_MESSAGE),
+                (payload, args, { user }) => payload.teamId === args.teamId &&
+                    ((payload.senderId === user.id && payload.receiverId === args.receiverId) ||
+                        (payload.senderId === args.receiverId && payload.receiverId === user.id))),
+            ),
+        },
+    },
     DirectMessage: {
         sender: ({ sender, senderId }, args, { models }) => {
             if (sender) {

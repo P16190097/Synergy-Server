@@ -3,21 +3,19 @@ import { formatErrors } from '../globals';
 import { requiresAuth } from '../permissions';
 
 export default {
-    User: {
-        teams: (parent, args, { models, user }) =>
-            models.sequelize.query(
-                'SELECT * FROM teams INNER JOIN members ON id = team_id WHERE user_id = ?',
-                {
-                    replacements: [user.id],
-                    model: models.Team,
-                    raw: true,
-                },
-            ),
-    },
     Query: {
         getUser: requiresAuth.createResolver((parent, args, { models, user }) => models.User.findOne({ where: { id: user.id } })),
 
         allUsers: (parent, args, { models }) => models.User.findAll(),
+
+        getTeamUsers: requiresAuth.createResolver((parent, args, { models }) => models.User.findAll({
+            include: [
+                {
+                    model: models.Team,
+                    where: { id: args.teamId }
+                }
+            ]
+        })),
 
         allTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
             models.Team.findAll({ where: { owner: user.id } }, { raw: true })
@@ -72,5 +70,16 @@ export default {
             // store hashed password, 12 saltrounds should suffice
             // models.User.create(args);
         },
-    }
+    },
+    User: {
+        teams: (parent, args, { models, user }) =>
+            models.sequelize.query(
+                'SELECT * FROM teams INNER JOIN members ON id = team_id WHERE user_id = ?',
+                {
+                    replacements: [user.id],
+                    model: models.Team,
+                    raw: true,
+                },
+            ),
+    },
 }; 

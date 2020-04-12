@@ -1,8 +1,7 @@
-import { withFilter, PubSub } from 'apollo-server-express';
+import { withFilter } from 'apollo-server-express';
+import pubSub from '../pubsub';
 import { formatErrors } from '../globals';
 import { requiresAuth, requiresMembership } from '../permissions';
-
-const pubSub = new PubSub();
 
 const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
 

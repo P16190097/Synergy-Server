@@ -1,3 +1,7 @@
+import Sequelize from 'sequelize';
+
+const Op = Sequelize.Op;
+
 const createResolver = (resolver) => {
     const baseResolver = resolver;
     baseResolver.createResolver = (childResolver) => {
@@ -19,6 +23,23 @@ export const requiresAuth = createResolver((parent, args, context) => {
 export const requiresAdmin = requiresAuth.createResolver((parent, args, context) => {
     if (!context.user.isAdmin) {
         throw new Error('Requires admin access');
+    }
+});
+
+export const directMessageAuth = createResolver(async (parent, args, { user, models }) => {
+    if (!user || !user.id) {
+        throw new Error('Not authenticated');
+    }
+
+    const members = await models.Member.findAll({
+        where: {
+            teamId: args.teamId,
+            [Op.or]: [{ userId: args.receiverId }, { userId: user.id }],
+        },
+    });
+
+    if (members.length !== 2) {
+        throw new Error('Something went wrong');
     }
 });
 

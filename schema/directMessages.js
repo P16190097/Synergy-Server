@@ -14,4 +14,8 @@ export default `
     type Mutation {
         createDirectMessage(teamId: Int!, receiverId: Int!, text: String!): VoidResponse!
     }
+
+    type Subscription {
+        newDirectMessage(teamId: Int!, receiverId: Int!): DirectMessage!
+    }
 `;

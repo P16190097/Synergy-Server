@@ -9,6 +9,7 @@ export default `
     type Query {
         getUser: User!
         allUsers: [User!]!
+        getTeamUsers(teamId: Int!): [User!]!
     }
 
     type Mutation {

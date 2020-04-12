@@ -66,5 +66,16 @@ export default {
     },
     Team: {
         channels: ({ id }, args, { models }) => models.Channel.findAll({ where: { teamId: id } }),
+        directMessageMembers: ({ id }, args, { models, user }) =>
+            models.sequelize.query('SELECT DISTINCT users.id, users.username FROM users JOIN direct_messages AS dms ON (users.id = dms.sender_id) OR (users.id = dms.receiver_id) WHERE (:currentUserId = dms.receiver_id OR :currentUserId = dms.sender_id) AND dms.team_id = :teamId',
+                {
+                    replacements: {
+                        currentUserId: user.id,
+                        teamId: id,
+                    },
+                    model: models.User,
+                    raw: true,
+                }
+            ),
     },
 };
