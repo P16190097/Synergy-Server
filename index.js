@@ -77,8 +77,7 @@ const server = new ApolloServer({
         user: connection ? connection.context.user : req.user,
         SECRET,
         SECRET2
-    }
-    )
+    })
 });
 
 server.applyMiddleware({ app });

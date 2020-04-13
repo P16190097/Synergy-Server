@@ -53,6 +53,7 @@ export default {
                 await models.Member.create({ userId: userToAdd.id, teamId });
                 return {
                     success: true,
+                    user: userToAdd,
                 };
             }
             catch (error) {

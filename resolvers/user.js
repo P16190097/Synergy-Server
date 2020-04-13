@@ -6,6 +6,8 @@ export default {
     Query: {
         getUser: requiresAuth.createResolver((parent, args, { models, user }) => models.User.findOne({ where: { id: user.id } })),
 
+        getSingleUser: requiresAuth.createResolver((parent, args, { models }) => models.User.findOne({ where: { id: args.userId } })),
+
         allUsers: (parent, args, { models }) => models.User.findAll(),
 
         getTeamUsers: requiresAuth.createResolver((parent, args, { models }) => models.User.findAll({
