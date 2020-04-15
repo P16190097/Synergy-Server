@@ -24,16 +24,16 @@ export default {
         ),
 
         // 'include' defines the join between teams and user table
-        inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
-            models.Team.findAll({
-                include: [
-                    {
-                        model: models.User,
-                        where: { id: user.id }
-                    }
-                ]
-            }, { raw: true })
-        ),
+        // inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
+        //     models.Team.findAll({
+        //         include: [
+        //             {
+        //                 model: models.User,
+        //                 where: { id: user.id }
+        //             }
+        //         ]
+        //     }, { raw: true })
+        // ),
         // This runs custom sql commands where sequalize does not have the capability to do so
         // inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
         //     models.sequelize.query('SELECT * FROM teams INNER JOIN members ON id = team_id WHERE user_id = ?', {

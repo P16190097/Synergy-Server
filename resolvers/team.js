@@ -2,6 +2,19 @@ import { formatErrors } from '../globals';
 import { requiresAuth } from '../permissions';
 
 export default {
+    Query: {
+        getUserTeams: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+            const teams = models.Team.findAll({
+                include: [
+                    {
+                        model: models.User,
+                        where: { id: user.id },
+                    }
+                ]
+            });
+            return teams;
+        })
+    },
     Mutation: {
         createTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
             try {
