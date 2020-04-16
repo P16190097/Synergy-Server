@@ -3,27 +3,24 @@ import { requiresAuth } from '../permissions';
 
 export default {
     Query: {
-        allTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
-            models.Team.findAll({ where: { owner: user.id } }, { raw: true })
-        ),
-        // 'include' defines the join between teams and user table
-        inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
-            models.Team.findAll({
+        getUserTeams: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+            const teams = models.Team.findAll({
                 include: [
                     {
                         model: models.User,
-                        where: { id: user.id }
+                        where: { id: user.id },
                     }
                 ]
-            }, { raw: true })
-        ),
-        // This runs custom sql commands where sequalize does not have the capability to do so
-        // inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
-        //     models.sequelize.query('SELECT * FROM teams INNER JOIN members ON id = team_id WHERE user_id = ?', {
-        //         replacements: [user.id],
-        //         models: models.Team
-        //     }),
-        // ),
+            });
+            return teams;
+        }),
+        getTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+            const adminUser = await models.Member.findOne({ where: { teamId: args.teamId, userId: user.id } }, { raw: true });
+            if (!adminUser || !adminUser.admin) {
+                throw new Error('You cannot edit this team');
+            }
+            return models.Team.findOne({ where: { id: args.teamId } });
+        })
     },
     Mutation: {
         createTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
@@ -33,6 +30,7 @@ export default {
                     async () => {
                         const team = await models.Team.create({ ...args, owner: user.id });
                         await models.Channel.create({ name: 'general', public: true, teamId: team.id });
+                        await models.Member.create({ teamId: team.id, userId: user.id, admin: true });
                         return team;
                     }
                 );
@@ -49,12 +47,38 @@ export default {
                 };
             }
         }),
+        editTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+            const adminUser = await models.Member.findOne({ where: { teamId: args.teamId, userId: user.id } }, { raw: true });
+            console.log(adminUser);
+            if (!adminUser.admin) {
+                return {
+                    success: false,
+                    errors: [{ path: 'email', message: 'You cannot edit this team' }],
+                };
+            }
+
+            try {
+                console.log(models.Team);
+                await models.Team.update({ name: args.teamName, description: args.description }, { where: { id: args.teamId } });
+            }
+            catch (error) {
+                console.log(error);
+                return {
+                    success: false,
+                    errors: formatErrors(error, models),
+                };
+            }
+
+            return {
+                success: true,
+            };
+        }),
         addTeamMember: requiresAuth.createResolver(async (parent, { email, teamId }, { models, user }) => {
             try {
-                const teamPromise = models.Team.findOne({ where: { id: teamId } }, { raw: true });
+                const memberPromise = models.Member.findOne({ where: { teamId, userId: user.id } }, { raw: true });
                 const userToAddPromise = models.User.findOne({ where: { email }, raw: true });
-                const [team, userToAdd] = await Promise.all([teamPromise, userToAddPromise]);
-                if (team.owner !== user.id) {
+                const [member, userToAdd] = await Promise.all([memberPromise, userToAddPromise]);
+                if (!member.admin) {
                     return {
                         success: false,
                         errors: [{ path: 'email', message: 'You cannot add members to this team' }]
@@ -75,6 +99,7 @@ export default {
                 await models.Member.create({ userId: userToAdd.id, teamId });
                 return {
                     success: true,
+                    user: userToAdd,
                 };
             }
             catch (error) {
@@ -88,5 +113,20 @@ export default {
     },
     Team: {
         channels: ({ id }, args, { models }) => models.Channel.findAll({ where: { teamId: id } }),
+        directMessageMembers: ({ id }, args, { models, user }) =>
+            models.sequelize.query('SELECT DISTINCT users.id, users.username FROM users JOIN direct_messages AS dms ON (users.id = dms.sender_id) OR (users.id = dms.receiver_id) WHERE (:currentUserId = dms.receiver_id OR :currentUserId = dms.sender_id) AND dms.team_id = :teamId',
+                {
+                    replacements: {
+                        currentUserId: user.id,
+                        teamId: id,
+                    },
+                    model: models.User,
+                    raw: true,
+                }
+            ),
+        admin: async ({ id }, args, { models, user }) => {
+            const admin = await models.Member.findOne({ attributes: ['admin'], where: { userId: user.id, teamId: id } });
+            return admin.dataValues.admin;
+        },
     },
 };

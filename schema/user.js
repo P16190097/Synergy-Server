@@ -7,8 +7,10 @@ export default `
     }
 
     type Query {
-        getUser(id: Int!): User!
+        getUser: User!
         allUsers: [User!]!
+        getSingleUser(userId: Int!): User!
+        getTeamUsers(teamId: Int!): [User!]!
     }
 
     type Mutation {

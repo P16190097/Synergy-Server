@@ -4,6 +4,9 @@ export default (sequalize, DataTypes) => {
             type: DataTypes.STRING,
             unique: true,
         },
+        description: {
+            type: DataTypes.STRING,
+        },
     });
 
     Team.associate = (models) => {
@@ -13,9 +16,6 @@ export default (sequalize, DataTypes) => {
                 name: 'teamId',
                 field: 'team_id'
             }
-        });
-        Team.belongsTo(models.User, {
-            foreignKey: 'owner'
         });
     };
 
