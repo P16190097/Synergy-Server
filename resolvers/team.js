@@ -59,7 +59,7 @@ export default {
 
             try {
                 console.log(models.Team);
-                await models.Team.update({ name: args.teamName }, { where: { id: args.teamId } });
+                await models.Team.update({ name: args.teamName, description: args.description }, { where: { id: args.teamId } });
             }
             catch (error) {
                 console.log(error);

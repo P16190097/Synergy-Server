@@ -2,6 +2,7 @@ export default `
     type Team {
         id: Int!
         name: String!
+        description: String!
         directMessageMembers: [User!]
         channels: [Channel!]!
         admin: Boolean!
@@ -14,9 +15,9 @@ export default `
     }
 
     type Mutation {
-        createTeam(name: String!): CreateTeamResponse!
+        createTeam(name: String!, description: String!): CreateTeamResponse!
         addTeamMember(email: String!, teamId: Int!): UserResponse!
-        editTeam(teamId: Int!, teamName: String!): VoidResponse!
+        editTeam(teamId: Int!, teamName: String!, description: String!): VoidResponse!
     }
 
     type CreateTeamResponse {
