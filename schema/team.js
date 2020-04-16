@@ -10,11 +10,13 @@ export default `
     type Query {
         allTeams: [Team!]!
         getUserTeams: [Team!]!
+        getTeam(teamId: Int!): Team!
     }
 
     type Mutation {
         createTeam(name: String!): CreateTeamResponse!
         addTeamMember(email: String!, teamId: Int!): UserResponse!
+        editTeam(teamId: Int!, teamName: String!): VoidResponse!
     }
 
     type CreateTeamResponse {

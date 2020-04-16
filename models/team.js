@@ -4,6 +4,9 @@ export default (sequalize, DataTypes) => {
             type: DataTypes.STRING,
             unique: true,
         },
+        // description: {
+        //     type: DataTypes.STRING,
+        // }
     });
 
     Team.associate = (models) => {

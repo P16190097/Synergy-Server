@@ -13,6 +13,13 @@ export default {
                 ]
             });
             return teams;
+        }),
+        getTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+            const adminUser = await models.Member.findOne({ where: { teamId: args.teamId, userId: user.id } }, { raw: true });
+            if (!adminUser || !adminUser.admin) {
+                throw new Error('You cannot edit this team');
+            }
+            return models.Team.findOne({ where: { id: args.teamId } });
         })
     },
     Mutation: {
@@ -39,6 +46,32 @@ export default {
                     errors: formatErrors(error, models),
                 };
             }
+        }),
+        editTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+            const adminUser = await models.Member.findOne({ where: { teamId: args.teamId, userId: user.id } }, { raw: true });
+            console.log(adminUser);
+            if (!adminUser.admin) {
+                return {
+                    success: false,
+                    errors: [{ path: 'email', message: 'You cannot edit this team' }],
+                };
+            }
+
+            try {
+                console.log(models.Team);
+                await models.Team.update({ name: args.teamName }, { where: { id: args.teamId } });
+            }
+            catch (error) {
+                console.log(error);
+                return {
+                    success: false,
+                    errors: formatErrors(error, models),
+                };
+            }
+
+            return {
+                success: true,
+            };
         }),
         addTeamMember: requiresAuth.createResolver(async (parent, { email, teamId }, { models, user }) => {
             try {
@@ -91,5 +124,9 @@ export default {
                     raw: true,
                 }
             ),
+        admin: async ({ id }, args, { models, user }) => {
+            const admin = await models.Member.findOne({ attributes: ['admin'], where: { userId: user.id, teamId: id } });
+            return admin.dataValues.admin;
+        },
     },
 };
