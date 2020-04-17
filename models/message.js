@@ -9,7 +9,9 @@ export default (sequalize, DataTypes) => {
             foreignKey: {
                 name: 'channelId',
                 field: 'channel_id'
-            }
+            },
+            onDelete: 'CASCADE',
+            hooks: true,
         });
 
         // 1:M
@@ -18,6 +20,8 @@ export default (sequalize, DataTypes) => {
                 name: 'userId',
                 field: 'user_id'
             },
+            onDelete: 'CASCADE',
+            hooks: true,
         });
     };
 

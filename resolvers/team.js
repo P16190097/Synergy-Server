@@ -48,9 +48,8 @@ export default {
             }
         }),
         editTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
-            const adminUser = await models.Member.findOne({ where: { teamId: args.teamId, userId: user.id } }, { raw: true });
-            console.log(adminUser);
-            if (!adminUser.admin) {
+            const auth = await models.Member.findOne({ where: { teamId: args.teamId, userId: user.id } }, { raw: true });
+            if (!auth.dataValues.admin) {
                 return {
                     success: false,
                     errors: [{ path: 'email', message: 'You cannot edit this team' }],
@@ -72,6 +71,29 @@ export default {
             return {
                 success: true,
             };
+        }),
+        deleteTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+            try {
+                const auth = await models.Member.findOne({ where: { teamId: args.teamId, userId: user.id } }, { raw: true });
+                console.log(auth.dataValues);
+                if (auth.dataValues.admin) {
+                    console.log('deleting team...');
+                    await models.Team.destroy({ where: { id: args.teamId } });
+                    return {
+                        success: true,
+                    };
+                }
+                return {
+                    success: false,
+                    erorrs: [{ path: 'Delete Team', message: 'Not authorized to delete this team' }],
+                };
+            }
+            catch (error) {
+                return {
+                    success: false,
+                    errors: formatErrors(error, models),
+                };
+            }
         }),
         addTeamMember: requiresAuth.createResolver(async (parent, { email, teamId }, { models, user }) => {
             try {
@@ -107,6 +129,27 @@ export default {
                 return {
                     success: false,
                     errors: formatErrors(error, models),
+                };
+            }
+        }),
+        leaveTeam: requiresAuth.createResolver(async (parent, { teamId }, { models, user }) => {
+            try {
+                const auth = await models.User.findOne({ where: { id: user.id } });
+                if (!auth.dataValues.admin) {
+                    await models.Member.destroy({ where: { userId: user.id, teamId } });
+                    return {
+                        success: true,
+                    };
+                }
+                return {
+                    success: false,
+                    errors: [{ path: 'leaveTeam', message: 'Admins may not leave teams' }],
+                };
+            }
+            catch (error) {
+                return {
+                    success: false,
+                    errors: formatErrors(models, error),
                 };
             }
         }),

@@ -11,7 +11,9 @@ export default (sequalize, DataTypes) => {
         // 1:M
         Channel.belongsTo(models.Team, {
             foreignKey: 'teamId',
-            field: 'team_id'
+            field: 'team_id',
+            onDelete: 'CASCADE',
+            hooks: true,
         });
 
         Channel.belongsToMany(models.User, {

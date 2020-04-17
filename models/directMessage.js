@@ -9,7 +9,9 @@ export default (sequalize, DataTypes) => {
             foreignKey: {
                 name: 'receiverId',
                 field: 'receiver_id',
-            }
+            },
+            onDelete: 'CASCADE',
+            hooks: true,
         });
 
         // 1:M
@@ -17,7 +19,9 @@ export default (sequalize, DataTypes) => {
             foreignKey: {
                 name: 'teamId',
                 field: 'team_id',
-            }
+            },
+            onDelete: 'CASCADE',
+            hooks: true,
         });
 
         // 1:M
@@ -26,6 +30,8 @@ export default (sequalize, DataTypes) => {
                 name: 'senderId',
                 field: 'sender_id',
             },
+            onDelete: 'CASCADE',
+            hooks: true,
         });
     };
 
