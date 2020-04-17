@@ -18,6 +18,8 @@ export default `
         createTeam(name: String!, description: String!): CreateTeamResponse!
         addTeamMember(email: String!, teamId: Int!): UserResponse!
         editTeam(teamId: Int!, teamName: String!, description: String!): VoidResponse!
+        deleteTeam(teamId: Int!): VoidResponse!
+        leaveTeam(teamId: Int!): VoidResponse!
     }
 
     type CreateTeamResponse {

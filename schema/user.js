@@ -16,6 +16,7 @@ export default `
     type Mutation {
         registerUser(username: String!, email: String!, password: String!): RegisterResponse!
         authenticateUser(email: String!, password: String!): LoginResponse!
+        deleteUser: VoidResponse!
     }
 
     type LoginResponse {

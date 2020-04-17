@@ -72,6 +72,20 @@ export default {
             // store hashed password, 12 saltrounds should suffice
             // models.User.create(args);
         },
+        deleteUser: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+            try {
+                await models.User.destroy({ where: { id: user.id } });
+                return {
+                    success: true,
+                };
+            }
+            catch (error) {
+                return {
+                    success: false,
+                    errors: formatErrors(models, error),
+                };
+            }
+        }),
     },
     User: {
         teams: (parent, args, { models, user }) =>
