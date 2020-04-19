@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { auth } from '../testSetup';
+
+let user;
 
 describe('User resolvers', () => {
     test('createUser', async () => {
@@ -22,12 +25,13 @@ describe('User resolvers', () => {
         });
 
         const { data } = resp;
+        user = data.data.registerUser.user;
         expect(data).toMatchObject({
             'data': {
                 'registerUser': {
                     'success': true,
                     'user': {
-                        'id': 1,
+                        'id': expect.any(Number),
                         'username': 'tester',
                         'email': 'tester@test.com'
                     },
@@ -36,33 +40,6 @@ describe('User resolvers', () => {
             }
         });
     });
-
-    // test('allUsers', async () => {
-    //     const resp = await axios.post('http://localhost:8080/graphql', {
-    //         query: `
-    //             query {
-    //                 allUsers {
-    //                     id
-    //                     username
-    //                     email
-    //                 }
-    //             }
-    //         `,
-    //     });
-
-    //     const { data } = resp;
-    //     expect(data).toMatchObject({
-    //         'data': {
-    //             'allUsers': [
-    //                 {
-    //                     'id': 1,
-    //                     'username': 'tester',
-    //                     'email': 'tester@test.com'
-    //                 }
-    //             ]
-    //         }
-    //     });
-    // });
 
     test('AuthenticateUser', async () => {
         const resp = await axios.post('http://localhost:8080/graphql', {
@@ -94,26 +71,90 @@ describe('User resolvers', () => {
         });
     });
 
-    test('DeleteUser', async () => {
-        const auth = await axios.post('http://localhost:8080/graphql', {
-            query: `
-            mutation {
-                authenticateUser(email: "tester@test.com", password: "password") {
-                  success
-                  token
-                  refreshToken
-                  errors {
-                    path
-                    message
-                  }
+    test('GetSingleUser', async () => {
+        const { token, refreshToken } = await auth(user);
+
+        const resp = await axios.post('http://localhost:8080/graphql',
+            {
+                query: `
+                query {
+                    getSingleUser(userId: 1) {
+                        id
+                        username
+                        email
+                        teams {
+                            id
+                            name
+                            description
+                        }
+                    }
+
+                }
+            `,
+            },
+            {
+                headers: {
+                    'x-token': token,
+                    'x-refresh-token': refreshToken,
+                },
+            }
+        );
+        const { data } = resp;
+        expect(data).toMatchObject({
+            'data': {
+                'getSingleUser': {
+                    'id': 1,
+                    'username': 'tester',
+                    'email': 'tester@test.com',
+                    'teams': [],
                 }
             }
-            `,
         });
+    });
 
-        const { data: { authenticateUser: { token, refreshToken } } } = auth.data;
+    test('GetUser', async () => {
+        const { token, refreshToken } = await auth(user);
 
-        console.log(token, refreshToken);
+        const resp = await axios.post('http://localhost:8080/graphql',
+            {
+                query: `
+                query {
+                    getUser {
+                        id
+                        username
+                        email
+                        teams {
+                            id
+                            name
+                            description
+                        }
+                    }
+                }
+            `,
+            },
+            {
+                headers: {
+                    'x-token': token,
+                    'x-refresh-token': refreshToken,
+                },
+            }
+        );
+
+        const { data } = resp;
+        expect(data).toMatchObject({
+            'data': {
+                'getUser': {
+                    'id': 1,
+                    'username': 'tester',
+                    'email': 'tester@test.com',
+                    'teams': [],
+                }
+            }
+        });
+    });
+
+    test('DeleteUser', async () => {
+        const { token, refreshToken } = await auth(user);
 
         const resp = await axios.post('http://localhost:8080/graphql',
             {

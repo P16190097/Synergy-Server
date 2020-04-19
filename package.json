@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "start": "nodemon --exec babel-node index.js",
-    "test-server": "set TEST_DB=synergytest&& babel-node index.js"
+    "test-server": "set TEST_DB=synergytest&& nodemon --exec babel-node index.js"
   },
   "repository": {
     "type": "git",
