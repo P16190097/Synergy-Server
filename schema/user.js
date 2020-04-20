@@ -8,7 +8,6 @@ export default `
 
     type Query {
         getUser: User!
-        allUsers: [User!]!
         getSingleUser(userId: Int!): User!
         getTeamUsers(teamId: Int!): [User!]!
     }

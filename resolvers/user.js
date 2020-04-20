@@ -8,7 +8,7 @@ export default {
 
         getSingleUser: requiresAuth.createResolver((parent, args, { models }) => models.User.findOne({ where: { id: args.userId } })),
 
-        allUsers: (parent, args, { models }) => models.User.findAll(),
+        //allUsers: (parent, args, { models }) => models.User.findAll(),
 
         getTeamUsers: requiresAuth.createResolver((parent, args, { models }) => models.User.findAll({
             include: [
@@ -19,9 +19,9 @@ export default {
             ]
         })),
 
-        allTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
-            models.Team.findAll({ where: { owner: user.id } }, { raw: true })
-        ),
+        // allTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
+        //     models.Team.findAll({ where: { owner: user.id } }, { raw: true })
+        // ),
 
         // 'include' defines the join between teams and user table
         // inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>

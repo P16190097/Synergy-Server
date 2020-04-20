@@ -8,7 +8,6 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import { refreshTokens } from './auth';
 
-/* global __dirname */
 // __dirname conains the absolute path of the directory containing the currently executing file
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')));
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
@@ -93,8 +92,9 @@ server.installSubscriptionHandlers(httpServer);
 //     });
 // });
 
-models.sequelize.sync().then(() => {
+models.sequelize.sync({ force: (process.env.TEST_DB ? true : false) }).then(() => {
     httpServer.listen({ port }, () => {
+        console.log((process.env.TEST_DB ? 'Database was reloaded' : null));
         console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`);
         console.log(`🚀 Subscriptions ready at ws://localhost:${port}${server.subscriptionsPath}`);
     });
