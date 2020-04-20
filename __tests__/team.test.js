@@ -5,7 +5,7 @@ let user;
 let memberUser;
 let team;
 
-describe('Team resolvers', () => {
+describe('Team and direct message resolvers', () => {
     beforeAll(async () => {
         user = await createLogin('teamTest');
     });
@@ -94,90 +94,6 @@ describe('Team resolvers', () => {
         });
     });
 
-    test('AddTeamMember', async () => {
-        const { token, refreshToken } = await auth(user);
-
-        memberUser = await createLogin('MemberTest');
-
-        const resp = await axios.post('http://localhost:8080/graphql',
-            {
-                query: `
-                mutation {
-                    addTeamMember(teamId: ${team.id}, email: "${memberUser.email}") {
-                        success
-                        user {
-                            id
-                            username
-                            email
-                        }
-                        errors {
-                            path
-                            message
-                        }
-                    }
-                }
-            `,
-            },
-            {
-                headers: {
-                    'x-token': token,
-                    'x-refresh-token': refreshToken,
-                },
-            }
-        );
-
-        const { data } = resp;
-        expect(data).toMatchObject({
-            'data': {
-                'addTeamMember': {
-                    'success': true,
-                    'user': {
-                        'id': memberUser.id,
-                        'username': memberUser.username,
-                        'email': memberUser.email,
-                    },
-                    'errors': null,
-                },
-            }
-        });
-    });
-
-    test('LeaveTeam', async () => {
-        const { token, refreshToken } = await auth(memberUser);
-
-        const resp = await axios.post('http://localhost:8080/graphql',
-            {
-                query: `
-                mutation {
-                    leaveTeam(teamId: ${team.id}) {
-                        success
-                        errors {
-                            path
-                            message
-                        }
-                    }
-                }
-            `,
-            },
-            {
-                headers: {
-                    'x-token': token,
-                    'x-refresh-token': refreshToken,
-                },
-            }
-        );
-
-        const { data } = resp;
-        expect(data).toMatchObject({
-            'data': {
-                'leaveTeam': {
-                    'success': true,
-                    'errors': null,
-                },
-            }
-        });
-    });
-
     test('GetTeam', async () => {
         const { token, refreshToken } = await auth(user);
 
@@ -242,6 +158,195 @@ describe('Team resolvers', () => {
         expect(data).toMatchObject({
             'data': {
                 'editTeam': {
+                    'success': true,
+                    'errors': null,
+                },
+            }
+        });
+    });
+
+    test('AddTeamMember', async () => {
+        const { token, refreshToken } = await auth(user);
+
+        memberUser = await createLogin('MemberTest');
+
+        const resp = await axios.post('http://localhost:8080/graphql',
+            {
+                query: `
+                mutation {
+                    addTeamMember(teamId: ${team.id}, email: "${memberUser.email}") {
+                        success
+                        user {
+                            id
+                            username
+                            email
+                        }
+                        errors {
+                            path
+                            message
+                        }
+                    }
+                }
+            `,
+            },
+            {
+                headers: {
+                    'x-token': token,
+                    'x-refresh-token': refreshToken,
+                },
+            }
+        );
+
+        const { data } = resp;
+        expect(data).toMatchObject({
+            'data': {
+                'addTeamMember': {
+                    'success': true,
+                    'user': {
+                        'id': memberUser.id,
+                        'username': memberUser.username,
+                        'email': memberUser.email,
+                    },
+                    'errors': null,
+                },
+            }
+        });
+    });
+
+    test('Create Direct Message', async () => {
+        const { token, refreshToken } = await auth(user);
+
+        const resp = await axios.post('http://localhost:8080/graphql',
+            {
+                query: `
+                mutation {
+                    createDirectMessage(teamId: ${team.id}, receiverId: ${memberUser.id}, text: "test direct message") {
+                        success
+                        errors {
+                            path
+                            message
+                        }
+                    }
+                }
+            `,
+            },
+            {
+                headers: {
+                    'x-token': token,
+                    'x-refresh-token': refreshToken,
+                },
+            }
+        );
+
+        const { data } = resp;
+        expect(data).toMatchObject({
+            'data': {
+                'createDirectMessage': {
+                    'success': true,
+                    'errors': null,
+                },
+            }
+        });
+    });
+
+    test('Get Direct Messages', async () => {
+        const { token, refreshToken } = await auth(user);
+
+        const resp = await axios.post('http://localhost:8080/graphql',
+            {
+                query: `
+                query {
+                    getDirectMessages(teamId: ${team.id}, receiverId: ${memberUser.id}) {
+                        id
+                        text
+                    }
+                }
+            `,
+            },
+            {
+                headers: {
+                    'x-token': token,
+                    'x-refresh-token': refreshToken,
+                },
+            }
+        );
+
+        const { data } = resp;
+        expect(data).toMatchObject({
+            'data': {
+                'getDirectMessages': [{
+                    'id': 1,
+                    'text': 'test direct message',
+                }]
+            }
+        });
+    });
+
+    test('Delete Direct Message', async () => {
+        const { token, refreshToken } = await auth(user);
+
+        const resp = await axios.post('http://localhost:8080/graphql',
+            {
+                query: `
+                mutation {
+                    deleteDirectMessage(messageId: 1) {
+                        success
+                        errors {
+                            path
+                            message
+                        }
+                    }
+                }
+            `,
+            },
+            {
+                headers: {
+                    'x-token': token,
+                    'x-refresh-token': refreshToken,
+                },
+            }
+        );
+
+        const { data } = resp;
+        expect(data).toMatchObject({
+            'data': {
+                'deleteDirectMessage': {
+                    'success': true,
+                    'errors': null,
+                },
+            }
+        });
+    });
+
+    test('LeaveTeam', async () => {
+        const { token, refreshToken } = await auth(memberUser);
+
+        const resp = await axios.post('http://localhost:8080/graphql',
+            {
+                query: `
+                mutation {
+                    leaveTeam(teamId: ${team.id}) {
+                        success
+                        errors {
+                            path
+                            message
+                        }
+                    }
+                }
+            `,
+            },
+            {
+                headers: {
+                    'x-token': token,
+                    'x-refresh-token': refreshToken,
+                },
+            }
+        );
+
+        const { data } = resp;
+        expect(data).toMatchObject({
+            'data': {
+                'leaveTeam': {
                     'success': true,
                     'errors': null,
                 },

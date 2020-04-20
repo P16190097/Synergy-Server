@@ -127,6 +127,19 @@ describe('User resolvers', () => {
                             id
                             name
                             description
+                            admin
+                            channels {
+                                id 
+                                name
+                                messages {
+                                    id
+                                    text
+                                    user {
+                                        id
+                                        username
+                                    }
+                                }
+                            }
                         }
                     }
                 }

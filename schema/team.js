@@ -9,7 +9,6 @@ export default `
     }
 
     type Query {
-        allTeams: [Team!]!
         getUserTeams: [Team!]!
         getTeam(teamId: Int!): Team!
     }
