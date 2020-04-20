@@ -78,7 +78,7 @@ describe('User resolvers', () => {
             {
                 query: `
                 query {
-                    getSingleUser(userId: 1) {
+                    getSingleUser(userId: ${user.id}) {
                         id
                         username
                         email
@@ -103,9 +103,9 @@ describe('User resolvers', () => {
         expect(data).toMatchObject({
             'data': {
                 'getSingleUser': {
-                    'id': 1,
-                    'username': 'tester',
-                    'email': 'tester@test.com',
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
                     'teams': [],
                 }
             }
@@ -144,9 +144,9 @@ describe('User resolvers', () => {
         expect(data).toMatchObject({
             'data': {
                 'getUser': {
-                    'id': 1,
-                    'username': 'tester',
-                    'email': 'tester@test.com',
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
                     'teams': [],
                 }
             }

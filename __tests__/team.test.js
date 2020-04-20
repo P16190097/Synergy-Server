@@ -3,7 +3,6 @@ import { auth, createLogin } from '../testSetup';
 
 let user;
 let memberUser;
-// eslint-disable-next-line no-unused-vars
 let team;
 
 describe('Team resolvers', () => {
@@ -58,6 +57,43 @@ describe('Team resolvers', () => {
         });
     });
 
+    test('GetUsersByTeam', async () => {
+        const { token, refreshToken } = await auth(user);
+
+        const resp = await axios.post('http://localhost:8080/graphql',
+            {
+                query: `
+                query {
+                    getTeamUsers(teamId: ${team.id}) {
+                        id
+                        username
+                        email
+                    }
+                }
+            `,
+            },
+            {
+                headers: {
+                    'x-token': token,
+                    'x-refresh-token': refreshToken,
+                },
+            }
+        );
+
+        const { data } = resp;
+        expect(data).toMatchObject({
+            'data': {
+                'getTeamUsers': [
+                    {
+                        'id': user.id,
+                        'email': user.email,
+                        'username': user.username,
+                    },
+                ]
+            }
+        });
+    });
+
     test('AddTeamMember', async () => {
         const { token, refreshToken } = await auth(user);
 
@@ -102,48 +138,6 @@ describe('Team resolvers', () => {
                     },
                     'errors': null,
                 },
-            }
-        });
-    });
-
-    test('GetUsersByTeam', async () => {
-        const { token, refreshToken } = await auth(user);
-
-        const resp = await axios.post('http://localhost:8080/graphql',
-            {
-                query: `
-                query {
-                    getTeamUsers(teamId: 1) {
-                        id
-                        username
-                        email
-                    }
-                }
-            `,
-            },
-            {
-                headers: {
-                    'x-token': token,
-                    'x-refresh-token': refreshToken,
-                },
-            }
-        );
-
-        const { data } = resp;
-        expect(data).toMatchObject({
-            'data': {
-                'getTeamUsers': [
-                    {
-                        'id': user.id,
-                        'username': user.username,
-                        'email': user.email,
-                    },
-                    {
-                        'id': memberUser.id,
-                        'username': memberUser.username,
-                        'email': memberUser.email,
-                    },
-                ]
             }
         });
     });

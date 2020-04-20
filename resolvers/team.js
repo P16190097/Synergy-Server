@@ -57,7 +57,6 @@ export default {
             }
 
             try {
-                console.log(models.Team);
                 await models.Team.update({ name: args.teamName, description: args.description }, { where: { id: args.teamId } });
             }
             catch (error) {
@@ -75,7 +74,6 @@ export default {
         deleteTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
             try {
                 const auth = await models.Member.findOne({ where: { teamId: args.teamId, userId: user.id } }, { raw: true });
-                console.log(auth.dataValues);
                 if (auth.dataValues.admin) {
                     console.log('deleting team...');
                     await models.Team.destroy({ where: { id: args.teamId } });

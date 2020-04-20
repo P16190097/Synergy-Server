@@ -3,7 +3,6 @@ export default `
         id: Int!
         text: String!
         user: User!
-        channel: Channel!
         createdAt: String!
     }
 
@@ -19,6 +18,7 @@ export default `
 
     type Mutation {
         createMessage(channelId: Int!, text: String!): VoidResponse!
+        deleteMessage(teamId: Int!, messageId: Int!): VoidResponse!
     }
 
     type Subscription {

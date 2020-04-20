@@ -48,6 +48,40 @@ export const deleteLogin = async (token, refreshToken) => {
   );
 };
 
+export const createTeam = async (user, teamName) => {
+  const { token, refreshToken } = await auth(user);
+
+  const resp = await axios.post('http://localhost:8080/graphql',
+    {
+      query: `
+            mutation {
+                createTeam(name: "${teamName}", description: "test description") {
+                    success
+                    team {
+                        id
+                        name
+                        description
+                    }
+                    errors {
+                        path
+                        message
+                    }
+                }
+            }
+        `,
+    },
+    {
+      headers: {
+        'x-token': token,
+        'x-refresh-token': refreshToken,
+      },
+    }
+  );
+
+  const { data } = resp;
+  return data.data.createTeam.team;
+};
+
 export const auth = async (user) => {
   const auth = await axios.post('http://localhost:8080/graphql', {
     query: `
