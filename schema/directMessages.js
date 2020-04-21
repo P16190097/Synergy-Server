@@ -13,6 +13,7 @@ export default `
 
     type Mutation {
         createDirectMessage(teamId: Int!, receiverId: Int!, text: String!): VoidResponse!
+        deleteDirectMessage(messageId: Int!): VoidResponse!
     }
 
     type Subscription {

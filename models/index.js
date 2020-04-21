@@ -2,7 +2,7 @@
 import Sequelize from 'sequelize';
 
 // database connection configuration
-var sequelize = new Sequelize('synergy', 'postgres', 'password', {
+var sequelize = new Sequelize(process.env.TEST_DB || 'synergy', 'postgres', 'password', {
   dialect: 'postgres',
   operatorAliases: Sequelize.Op,
   define: {

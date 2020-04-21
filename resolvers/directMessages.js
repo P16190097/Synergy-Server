@@ -10,7 +10,7 @@ const NEW_DIRECT_MESSAGE = 'NEW_DIRECT_MESSAGE';
 
 export default {
     Query: {
-        getDirectMessages: async (parent, args, { models, user }) => models.DirectMessage.findAll({
+        getDirectMessages: requiresAuth.createResolver(async (parent, args, { models, user }) => models.DirectMessage.findAll({
             where: {
                 [Op.or]: [
                     { [Op.and]: [{ receiverId: args.receiverId }, { senderId: user.id }] },
@@ -20,7 +20,7 @@ export default {
             },
             order: [['createdAt', 'ASC']]
         }, { raw: true }
-        ),
+        )),
     },
     Mutation: {
         createDirectMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
@@ -50,7 +50,21 @@ export default {
                     errors: formatErrors(error, models),
                 };
             }
-        })
+        }),
+        deleteDirectMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+            try {
+                await models.DirectMessage.destroy({ where: { id: args.messageId, senderId: user.id } });
+                return {
+                    success: true,
+                };
+            }
+            catch (error) {
+                return {
+                    success: false,
+                    errors: formatErrors(error, models)
+                };
+            }
+        }),
     },
     Subscription: {
         newDirectMessage: {
