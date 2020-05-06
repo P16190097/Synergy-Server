@@ -15,14 +15,6 @@ export default (sequalize, DataTypes) => {
             onDelete: 'CASCADE',
             hooks: true,
         });
-
-        Channel.belongsToMany(models.User, {
-            through: 'channel_member',
-            foreignKey: {
-                name: 'channelId',
-                field: 'channel_id'
-            }
-        });
     };
 
     return Channel;
