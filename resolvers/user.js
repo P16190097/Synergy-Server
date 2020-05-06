@@ -90,7 +90,7 @@ export default {
     User: {
         teams: (parent, args, { models, user }) =>
             models.sequelize.query(
-                'SELECT * FROM teams INNER JOIN members ON id = team_id WHERE user_id = ?',
+                'SELECT * FROM teams INNER JOIN members ON teams.id = members.team_id WHERE members.user_id = ?',
                 {
                     replacements: [user.id],
                     model: models.Team,

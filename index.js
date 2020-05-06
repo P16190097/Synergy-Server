@@ -94,7 +94,7 @@ server.installSubscriptionHandlers(httpServer);
 
 models.sequelize.sync({ force: (process.env.TEST_DB ? true : false) }).then(() => {
     httpServer.listen({ port }, () => {
-        console.log((process.env.TEST_DB ? 'Database was reloaded' : null));
+        console.log((process.env.TEST_DB ? 'Database was rebuilt' : 'Database was not rebuilt'));
         console.log(`🚀 Server ready at http://localhost:8080${server.graphqlPath}`);
         console.log(`🚀 Subscriptions ready at ws://localhost:${port}${server.subscriptionsPath}`);
     });
