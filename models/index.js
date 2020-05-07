@@ -1,4 +1,3 @@
-
 import Sequelize from 'sequelize';
 
 // database connection configuration
