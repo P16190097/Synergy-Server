@@ -21,7 +21,7 @@ const SECRET2 = 'ashfdskdbgalkdfjgoahwd';
 const app = express();
 const port = 8080;
 
-const addUser = async (req, res, next) => {
+const authUser = async (req, res, next) => {
     const token = req.headers['x-token'];
     if (token) {
         try {
@@ -43,7 +43,7 @@ const addUser = async (req, res, next) => {
     next();
 };
 
-app.use(addUser);
+app.use(authUser);
 app.use(cors('*'));
 
 const server = new ApolloServer({
@@ -61,12 +61,6 @@ const server = new ApolloServer({
                     const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
                     return { user: newTokens.user };
                 }
-
-                // const member = await models.Member.findOne({ where: { teamId: 1, userId: user.id } });
-
-                // if (!member) {
-                //     throw new Error('Not authorised to view this team!');
-                // }
             }
             return { models };
         },
