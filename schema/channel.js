@@ -9,6 +9,7 @@ export default `
 
     type Mutation {
         createChannel(teamId: Int!, name: String!, public: Boolean=false): ChannelResponse! 
+        deleteChannel(channelId: Int!, teamId: Int!): VoidResponse!
     }
 
     type ChannelResponse {

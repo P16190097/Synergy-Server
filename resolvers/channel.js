@@ -26,6 +26,28 @@ export default {
                     errors: formatErrors(error, models),
                 };
             }
+        }),
+        deleteChannel: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+            try {
+                const member = await models.Member.findOne({ where: { teamId: args.teamId, userId: user.id } });
+                if (!member.admin) {
+                    return {
+                        success: false,
+                        errors: [{ path: 'channel', message: 'You do not have permission to create channels here' }]
+                    };
+                }
+                await models.Channel.destroy({ where: { id: args.channelId } });
+                return {
+                    success: true,
+                };
+            }
+            catch (error) {
+                console.log(error);
+                return {
+                    success: false,
+                    errors: formatErrors(error, models),
+                };
+            }
         })
     }
 };
