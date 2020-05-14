@@ -169,4 +169,40 @@ describe('Channel and message resolvers', () => {
             }
         });
     });
+
+    test('Delete Channel', async () => {
+        const { token, refreshToken } = await auth(user);
+
+        const resp = await axios.post('http://localhost:8080/graphql',
+            {
+                query: `
+                    mutation {
+                        deleteChannel(channelId: ${channel.id}, teamId: ${team.id}) {
+                            success
+                            errors {
+                                path
+                                message
+                            }
+                        }
+                    }
+                `,
+            },
+            {
+                headers: {
+                    'x-token': token,
+                    'x-refresh-token': refreshToken,
+                },
+            }
+        );
+
+        const { data } = resp;
+        expect(data).toMatchObject({
+            'data': {
+                'deleteChannel': {
+                    'success': true,
+                    'errors': null,
+                },
+            }
+        });
+    });
 });
