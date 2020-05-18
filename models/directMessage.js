@@ -1,6 +1,6 @@
-export default (sequalize, DataTypes) => {
-    const directMessage = sequalize.define('direct_message', {
-        text: DataTypes.STRING
+export default (sequelize, DataTypes) => {
+    const directMessage = sequelize.define('direct_message', {
+        text: DataTypes.TEXT
     });
 
     directMessage.associate = (models) => {

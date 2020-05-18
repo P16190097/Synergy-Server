@@ -1,5 +1,5 @@
-export default (sequalize, DataTypes) => {
-    const Channel = sequalize.define('channel', {
+export default (sequelize, DataTypes) => {
+    const Channel = sequelize.define('channel', {
         name: DataTypes.STRING,
         public: {
             type: DataTypes.BOOLEAN,

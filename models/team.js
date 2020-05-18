@@ -1,5 +1,5 @@
-export default (sequalize, DataTypes) => {
-    const Team = sequalize.define('team', {
+export default (sequelize, DataTypes) => {
+    const Team = sequelize.define('team', {
         name: {
             type: DataTypes.STRING,
             unique: true,

@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import { saltRounds } from '../globals';
 
-export default (sequalize, DataTypes) => {
-    const User = sequalize.define('user', {
+export default (sequelize, DataTypes) => {
+    const User = sequelize.define('user', {
         username: {
             type: DataTypes.STRING,
             unique: true,
@@ -51,14 +51,6 @@ export default (sequalize, DataTypes) => {
     User.associate = (models) => {
         User.belongsToMany(models.Team, {
             through: 'member',
-            foreignKey: {
-                name: 'userId',
-                field: 'user_id'
-            }
-        });
-        // N:M
-        User.belongsToMany(models.Channel, {
-            through: 'channel_member',
             foreignKey: {
                 name: 'userId',
                 field: 'user_id'
